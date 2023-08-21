@@ -160,7 +160,7 @@ class MercadoLibreProducts(object):
         return posts_data
 
 if __name__ == "__main__":
-    auth = MercadoLibreAuthenticator('client_credentials', '4477611963680779', 'oI4rccQCMNRK7wdjLxOqph5hyR138noD')
+    auth = MercadoLibreAuthenticator('private', 'private', 'private')
     token = auth.get_auth_token()
     mercado_libre_process = MercadoLibreProducts()
     posts_df = mercado_libre_process.get_all_posts()
