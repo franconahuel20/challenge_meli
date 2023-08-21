@@ -97,3 +97,45 @@ ORDER BY
   anio,
   mes,
   rn;
+
+  /*
+  ****************************************
+  3.Se solicita poblar una nueva tabla con el precio y estado de los Ítems a fin del día.
+  Tener en cuenta que debe ser reprocesable. Vale resaltar que en la tabla Item,
+  vamos a tener únicamente el último estado informado por la PK definida. (Se puede
+  resolver a través de StoredProcedure)
+  ****************************************
+  */
+
+  CREATE TABLE CHALLENGE_DATABASE.MARKETPLACE.ItemSnapshot (
+  item_id INT PRIMARY KEY,
+  precio FLOAT NOT NULL,
+  estado VARCHAR(50) NOT NULL,
+  fecha DATE
+);
+
+  CREATE OR REPLACE PROCEDURE CHALLENGE_DATABASE.MARKETPLACE.PopulateItemSnapshot()
+BEGIN
+  -- Eliminar registros existentes de la tabla de instantáneas (si es necesario)
+  DELETE FROM ItemSnapshot;
+
+  -- Insertar datos en la tabla de instantáneas
+  INSERT INTO ItemSnapshot (item_id, precio, estado, fecha)
+  SELECT
+    i.item_id,
+    i.precio,
+    i.estado,
+    CURDATE() AS fecha
+  FROM
+    Item i
+  WHERE
+    (i.item_id, i.fecha) IN (
+      SELECT
+        item_id,
+        MAX(fecha) AS fecha
+      FROM
+        Item
+      GROUP BY
+        item_id
+    );
+END;
